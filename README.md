@@ -3,7 +3,7 @@ A fully dynamic **graph-based visual editor** to create, connect, and manage **n
 Built using **SolidJS** + **TypeScript**. **solidJS** reactive framework like **React** 
 
 ![editor view](editor_view.png)
-## 🚀 Features
+##🚀 Features
 
 ### 🧩 Node and Edge System
 - Create nodes with **dynamic input/output ports**.
