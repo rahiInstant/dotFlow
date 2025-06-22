@@ -6,11 +6,7 @@
                * node which has both down and output vertex
                */
               if (node[nodeNames[element.name]].isDownVertex) {
-                console.log(element.name);
-                const outputEdge = parseEdges.filter(
-                  (item: any) => item.sourceNodeId === element.id
-                );
-                const outputVertex = outputEdge
+             
                   .map((item: any) => {
                     const targetNode = parseNodes.find(
                       (node: any) => node.id === item.targetNodeId
