@@ -1,0 +1,59 @@
+.VectorStoreNode {
+  border: 2px solid #c3c9d5;
+  height: 90px;
+  width: 280px;
+  border-radius: 60px;
+  background-color: #414244;
+  display: flex;
+  column-gap: 15px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  /* margin-left: 25px ; */
+  /* padding-left: 30px; */
+}
+
+.selectedNode {
+  border: 2px solid #c3c9d5;
+  height: 90px;
+  width: 280px;
+  border-radius: 60px;
+  background-color: #414244;
+  display: flex;
+  column-gap: 15px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  outline: 8px solid #626262;
+  /* margin-left: 25px ; */
+  /* padding-left: 30px; */
+}
+/* .testNode:active {
+      outline: 8px solid #626262;
+    } */
+.VectorStoreNodeIcon {
+  color: #fbfcfe;
+  font-size: 2rem;
+}
+
+.VectorStoreNodeTitle {
+  color: #f1f3ec;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: normal;
+
+  
+  /* margin-top: 5px; */
+}
+
+.VectorStoreNodeText {
+    width: 80%;
+  /* margin-top: 5px; */
+}
+
+.VectorStoreNodeDescription {
+  color: #a5abb6;
+  text-align: left;
+  font-size: 0.8rem;
+  /* margin-top: 5px; */
+}

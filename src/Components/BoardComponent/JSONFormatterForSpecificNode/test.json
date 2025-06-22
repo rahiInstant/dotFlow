@@ -1,0 +1,666 @@
+{
+  "name": "Email Analyzer",
+  "description": "A workflow demonstrating multiple inputs and outputs per node",
+  "nodes": [
+    {
+      "id": "gmailReader1",
+      "name": "Gmail Trigger",
+      "description": "Gmail reader",
+      "type": "GmailReader",
+      "parameters": {
+        "credentials": {
+          "id": "d0esgqltcbthv6156tjg",
+          "name": "Gmail Account",
+          "provider": "gmail",
+          "ctype": "oauth2"
+        },
+        "pollTimes": [
+          {
+            "mode": "everyMonth",
+            "hour": 10,
+            "minute": 5,
+            "dayOfMonth": 2
+          },
+          {
+            "mode": "custom",
+            "cronExpression": "* 5 * * * *"
+          }
+        ],
+        "simple": false,
+        "filters": {
+          "includeSpamTrash": true,
+          "includeDrafts": true,
+          "labelIds": ["INBOX", "IMPORTANT"],
+          "q": "is:unread",
+          "readStatus": "both",
+          "sender": "bill.rassel@gmail.com"
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "position": {
+        "x": 200,
+        "y": 200
+      },
+      "inputs": [],
+      "outputs": [
+        {
+          "id": "output",
+          "name": "Last Email",
+          "description": "Read last email from your gmail inbox",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "editNode1",
+      "name": "Edit Fields",
+      "description": "Modify,add,or remove item fields.",
+      "type": "EditNode",
+      "parameters": {
+        "mode": "manual_mapping",
+        "assignments": [
+          {
+            "id": "1",
+            "name": "sender",
+            "value": "{{ $json.from.value[0].address }}",
+            "type": "string"
+          },
+          {
+            "id": "2",
+            "name": "threadId",
+            "value": "{{ $json.threadId }}",
+            "type": "string"
+          },
+          {
+            "id": "3",
+            "name": "messageId",
+            "value": "{{ $json.id }}",
+            "type": "string"
+          },
+          {
+            "id": "4",
+            "name": "body",
+            "value": "{{ $json.text }}",
+            "type": "string"
+          }
+        ]
+      },
+      "position": {
+        "x": 400,
+        "y": 100
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "name": "Input",
+          "description": "Data to filter",
+          "type": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "name": "Output",
+          "description": "Outcode of the node after process",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "langchainAgent1",
+      "name": "AI Agent",
+      "description": "AI Agent",
+      "type": "LangchainAgent",
+      "parameters": {
+        "agent": "toolsAgent",
+        "promptType": "define",
+        "text": "{{ $json.body }}",
+        "options": {
+          "systemMessage": "Analyze the content of the provided email and determine if it is related to customer support. Use the following guidelines to make your decision:\n\n### **Customer Support Topics Include:**\n- Questions about order status, tracking, or changes.\n- Issues with damaged or defective products.\n- Refund or return requests.\n- Subscription cancellation or adjustments.\n- Technical issues with products, website, or app.\n- Payment or billing inquiries.\n- Requests to speak with a support representative.\n\n### **Output Format:**\n- Provide the result **strictly in JSON format** with a single field named `\"customerSupport\"` set to `true` or `false`.\n- Do not include any additional text, explanations, or commentary in the response.\n\n### **Example 1:**\n**Email:**  \n\"Hi, I placed an order last week and haven’t received a tracking number yet. Can you help?\"\n\n**Output:**  \n{\"customerSupport\": true}\n\n### **Example 2:**\n**Email:**  \n\"Hello, I’m interested in learning more about your pricing plans for enterprise customers.\"\n\n**Output:**  \n{\"customerSupport\": false}\n\n### Example 3:**\nHey, I have ordered one item, My order is not delivered yet, I need to talk to you, please cooperate with me.\n\n**Output:**  \n{\"customerSupport\": true}\n\n**Instructions:**\n1. Carefully read the email content.\n2. Determine if the email relates to any of the specified customer support topics.\n3. Output the result in JSON format **only**, with the field `\"customerSupport\"` set to `true` or `false`.\n4. Do not include any additional text or explanations.",
+          "maxIterations": 10,
+          "returnIntermediateSteps": true,
+          "passthroughBinaryImages": true
+        }
+      },
+      "position": {
+        "x": -16060,
+        "y": -440
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "name": "fromEdit",
+          "description": "data coming from previous node",
+          "type": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "name": "agent output",
+          "description": "reAct agent",
+          "type": "object"
+        },
+        {
+          "id": "chatModel",
+          "name": "from ollamaChatModel1",
+          "description": "data coming from ollama node",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "ollamaChatModel1",
+      "name": "Ollama Chat Model",
+      "description": "Ollama Chat Model",
+      "type": "Ollama",
+      "parameters": {
+        "credentials": {
+          "id": "d0rvblltcbtlha4jl3n0",
+          "name": "Ollama account",
+          "provider": "ollama",
+          "ctype": "url"
+        },
+        "model": "llama3.2:latest",
+        "options": {
+          "temperature": 0.7,
+          "topK": -1,
+          "topP": 1,
+          "frequencyPenalty": 0,
+          "keepAlive": "5m",
+          "lowVram": false,
+          "mainGpu": 0,
+          "numBatch": 512,
+          "numCtx": 2048,
+          "numGpu": -1,
+          "numPredict": -1,
+          "numThread": 0,
+          "penalizeNewline": true,
+          "presencePenalty": 0,
+          "repeatPenalty": 1,
+          "useMLock": true,
+          "useMMap": true,
+          "vocabOnly": true,
+          "format": "default"
+        }
+      },
+      "position": {
+        "x": -16060,
+        "y": -440
+      },
+      "inputs": [
+        {
+          "id": "output",
+          "name": "ollma_output",
+          "description": "ollama output port",
+          "type": "object"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "id": "switchNode1",
+      "name": "Switch",
+      "description": "Route items depending on defined expression or rules.",
+      "type": "SwitchNode",
+      "parameters": {
+        "rules": [
+          {
+            "id": "1",
+            "leftValue": "{{ $json.output.parseJson().customerSupport }}",
+            "rightValue": "",
+            "operator": {
+              "type": "boolean",
+              "operation": "true",
+              "singleValue": true
+            },
+            "renameOutput": true,
+            "outputKey": "Yes"
+          },
+          {
+            "id": "2",
+            "leftValue": "{{ $json.output.parseJson().customerSupport }}",
+            "rightValue": "",
+            "operator": {
+              "type": "boolean",
+              "operation": "false",
+              "singleValue": true
+            },
+            "renameOutput": true,
+            "outputKey": "No"
+          }
+        ]
+      },
+      "position": {
+        "x": -340,
+        "y": -1040
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "name": "Input",
+          "description": "Data to filter",
+          "type": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "Yes",
+          "name": "rule 0",
+          "description": "langchainAgent2.input",
+          "type": "object"
+        },
+        {
+          "id": "No",
+          "name": "rule 1",
+          "description": "sendEmail1.input",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "sendEmail1",
+      "name": "Send Email",
+      "description": "Send an SMTP protocol email",
+      "type": "SendEmail",
+      "disabled": true,
+      "parameters": {
+        "credentials": {
+          "id": "d0esgqltcbthv6156tjg",
+          "name": "SMTP account",
+          "provider": "email",
+          "ctype": "smtp"
+        },
+        "fromEmail": "mostain@reporunner.com",
+        "toEmail": "bill.rassel@gmail.com",
+        "subject": "No customer support email",
+        "emailFormat": "text",
+        "text": "Hello email received at {{ $now.format('LLL dd yyyy, hh:mm:ss') }}\n\nFrom: {{ $('Gmail Trigger').item.json.from.value[0].address }}\n\nSubject:  {{ $('Gmail Trigger').item.json.subject }}\n\nBody:  {{ $('Gmail Trigger').item.json.text }}\n",
+        "options": {
+          "appendAttribution": true,
+          "attachments": "",
+          "ccEmail": "cc@gmail.com",
+          "bccEmail": "bcc@gmail.com",
+          "allowUnauthorizedCerts": true,
+          "replyTo": "info@mostain.org"
+        }
+      },
+      "position": {
+        "x": -14960,
+        "y": -240
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "name": "Input",
+          "description": "SendEmail input port",
+          "type": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "input",
+          "name": "Input",
+          "description": "SendEmail input port",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "langchainAgent2",
+      "name": "Customer Support Agent",
+      "description": "Customer Support Agent",
+      "type": "LangchainAgent",
+      "disabled": false,
+      "parameters": {
+        "agent": "toolsAgent",
+        "promptType": "define",
+        "text": "{{ $('Edit Fields').item.json.body }}",
+        "options": {
+          "systemMessage": "You are a highly skilled and empathetic customer support agent specializing in drafting professional, accurate, and helpful responses to incoming customer emails. Your primary responsibility is to ensure customer queries are resolved in alignment with company policies and FAQs while maintaining a polite and professional tone.\n\n### **Task Workflow**\n1. **Read the incoming customer email carefully** to understand the customer's issue or question.\n2. **Use the \"customerSuppertDocs\" tool** to search for relevant policies, FAQs, or guidelines that address the customer's query. Ensure the response is accurate and policy-compliant.\n3. **Draft a response using the \"createDraft\" tool.** This step is **mandatory** and must not be skipped. The draft must:\n   - Directly address the customer's query.\n   - Be clear, concise, and professional.\n   - End with the sign-off:  \n     *\"Best Regards,  \n     Mostain, Customer Support RepoRunner Inc.\"*\n4. **Provide a concise summary** of the email content after drafting the response. The summary should include:\n   - The issue addressed.\n   - The key points or resolution provided in the response.\n\n### **Rules and Guidelines**\n- **Always use the \"customerSuppertDocs\" tool** before drafting a response. This ensures the response aligns with company policies and FAQs.\n- **Always use the \"createDraft\" tool to finalize the response.** This step is **critical** and must not be skipped under any circumstances.\n- **Maintain a polite and professional tone** in all communications. Avoid jargon or overly complex language.\n- **Double-check the draft** to ensure it directly addresses the customer's query and provides a clear resolution or next steps.\n- **Summarize the response** after drafting to ensure clarity and accountability.\n\n\n### **Examples**\n\n#### **Example 1**\n**Incoming Email:**  \n\"I ordered a product a week ago, but it still hasn't shipped. When will it arrive?\"\n\n**Step 1: Use \"customerSuppertDocs\" Tool**  \n**Search Query:** \"shipping timelines\"  \n**Relevant Info Found:** Standard shipping takes 7-10 days. Delays may occur during high-demand periods.\n\n**Step 2: Draft Response (via createDraft)**  \nDear [Customer's Name],  \n\nThank you for reaching out regarding your order. Standard shipping typically takes 7-10 business days. However, during high-demand periods, there may be slight delays.  \n\nI’ve checked your order, and it’s currently being prepared for shipment. You should receive a tracking number shortly. If you have any further questions, feel free to let us know.  \n\nBest Regards,  \nMostain, Customer Support RepoRunner Inc.  \n\n**Step 3: Summary**  \nDrafted a response to inform the customer about standard shipping timelines (7-10 business days) and noted that their order is being prepared for shipment. Reassured the customer and invited further inquiries.\n\n#### **Example 2**\n**Incoming Email:**  \n\"I tried to cancel my subscription but was still charged this month. Can I get a refund?\"\n\n**Step 1: Use \"customerSuppertDocs\" Tool**  \n**Search Query:** \"subscription cancellation policy\"  \n**Relevant Info Found:** Cancellation must be made 48 hours before the next billing cycle to avoid charges.\n\n**Step 2: Draft Response (via createDraft)**  \nDear [Customer's Name],  \n\nThank you for contacting us about your subscription charge. According to our policy, cancellations must be made at least 48 hours before the next billing cycle to avoid charges.  \n\nAs a one-time courtesy, I’ve processed a refund for this month’s charge. Please allow 3-4 business days for the refund to appear on your statement. If you have any other questions, feel free to reach out.  \n\nBest Regards,  \nMostain, Customer Support RepoRunner Inc.  \n\n**Step 3: Summary**  \nDrafted a response explaining the subscription cancellation policy (48 hours notice) and initiated a one-time refund as a courtesy. Provided reassurance and invited further questions.\n\n### **Key Reminders**\n- **Always follow the workflow:**  \n  1. Read the email.  \n  2. Use \"customerSuppertDocs\" to find relevant information.  \n  3. **Mandatory:** Draft the response using \"createDraft.\"  \n  4. Summarize the response.  \n- **Do not skip the \"createDraft\" step.** This is a critical part of the process.  \n- **Ensure the tone is empathetic and professional.**  \n- **Double-check the draft for accuracy and completeness before finalizing.**\n\n### **Output Format**\n- Always provide the draft response using the `createDraft` tool.  \n- Always include a summary of the response.  \n- Do not skip any steps in the workflow."
+        }
+      },
+      "position": {
+        "x": -14540,
+        "y": -660
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "name": "fromSwitch",
+          "description": "data coming from previous node",
+          "type": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "output",
+          "name": "agent output",
+          "description": "tools agent",
+          "type": "object"
+        },
+        {
+          "id": "chatModel",
+          "name": "toOllama",
+          "description": "data sending to LangchainAgent chatModel",
+          "type": "object"
+        },
+        {
+          "id": "tool1",
+          "name": "toTool1",
+          "description": "data sending to customerSuppertDocs tool",
+          "type": "tool"
+        },
+        {
+          "id": "tool2",
+          "name": "toTool2",
+          "description": "data sending to createDraft tool",
+          "type": "tool"
+        }
+      ]
+    },
+    {
+      "id": "chatModel2",
+      "name": "Ollama Chat Model2",
+      "description": "Brain of the customer support agent",
+      "type": "Ollama",
+      "parameters": {
+        "credentials": {
+          "id": "d0rvblltcbtlha4jl3n0",
+          "name": "Ollama account",
+          "provider": "ollama",
+          "ctype": "url"
+        },
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "position": {
+        "x": -14140,
+        "y": -160
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "name": "Input",
+          "description": "from LangchainAgent chatModel",
+          "type": "object"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "id": "gmailDraft1",
+      "name": "createDraft",
+      "description": "create gmail Draft",
+      "type": "GmailTool",
+      "parameters": {
+        "credentials": {
+          "id": "d0esgqltcbthv6156tjg",
+          "name": "Gmail Account",
+          "provider": "gmail",
+          "ctype": "oauth2"
+        },
+        "descriptionType": "manual",
+        "toolDescription": "Consume the Gmail API to createDraft response",
+        "resource": "draft",
+        "operation": "create",
+        "subject": "{{ $fromAI('Subject') }}",
+        "emailType": "text",
+        "message": "{{ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "threadId": "{{ $('Edit Fields').item.json.threadid }}",
+          "sendTo": "{{ $('Edit Fields').item.json.sender }}"
+        }
+      },
+      "position": {
+        "x": -13980,
+        "y": -400
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "name": "createDraft",
+          "description": "gmail tool input",
+          "type": "tool"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "id": "vectoreStoreTool1",
+      "name": "Vector Store Tool",
+      "description": "vectore store tool customerSuppertDocs",
+      "type": "VectoreStoreTool",
+      "parameters": {
+        "name": "customerSuppertDocs",
+        "description": "Retrieve information about our customer support policies and FAQs",
+        "limit": 4
+      },
+      "position": {
+        "x": -14460,
+        "y": -360
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "name": "Input",
+          "description": "data coming from pg vector store node",
+          "type": "tool"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "chatModel",
+          "name": "toChatModel3",
+          "description": "data sending to ollama model 3",
+          "type": "object"
+        },
+        {
+          "id": "vectorStore",
+          "name": "toPgVectorStore",
+          "description": "data sending to pgvector",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "pgVectoreStore1",
+      "name": "PGVector Store",
+      "description": "pgvectore store",
+      "type": "PGVectorStore",
+      "parameters": {
+        "credentials": {
+          "id": "a",
+          "name": "Postgres account",
+          "provider": "postgres",
+          "ctype": "db"
+        },
+        "operationMode": "retreiveDocumentForVectoreStore",
+        "tableName": "n8n_vectors",
+        "options": {
+          "distanceStrategy": "euclidean",
+          "collection": {
+            "values": {
+              "useCollection": true,
+              "collectionName": "n8ns",
+              "collectionTableName": "n8n_vector_collectionss"
+            }
+          },
+          "columnNames": {
+            "values": {
+              "idColumnName": "ids",
+              "vectorColumnName": "embeddings",
+              "contentColumnName": "texts",
+              "metadataColumnName": "metadatas"
+            }
+          }
+        }
+      },
+      "position": {
+        "x": -14560,
+        "y": -140
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "name": "Input",
+          "description": "data coming from Vector Store Tool",
+          "type": "object"
+        }
+      ],
+      "outputs": [
+        {
+          "id": "chatModel",
+          "name": "Output",
+          "description": "pgvectore chat model for embeddings",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "ollamaChatModel3",
+      "name": "Ollama Chat Model3",
+      "description": "ollama chat model",
+      "type": "Ollama",
+      "parameters": {
+        "credentials": {
+          "id": "d0rvblltcbtlha4jl3n0",
+          "name": "Ollama account",
+          "provider": "ollama",
+          "ctype": "url"
+        },
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "position": {
+        "x": -14140,
+        "y": -160
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "name": "Input",
+          "description": "Input port",
+          "type": "object"
+        }
+      ],
+      "outputs": []
+    },
+    {
+      "id": "embeddings1",
+      "name": "Embeddings",
+      "description": "embeddings for PGVectore Store",
+      "type": "Ollama",
+      "parameters": {
+        "credentials": {
+          "id": "d0rvblltcbtlha4jl3n0",
+          "name": "Ollama account",
+          "provider": "ollama",
+          "ctype": "url"
+        },
+        "model": "nomic-embed-text:latest"
+      },
+      "position": {
+        "x": -14600,
+        "y": -100
+      },
+      "inputs": [
+        {
+          "id": "input",
+          "name": "Input",
+          "description": "input port",
+          "type": "object"
+        }
+      ],
+      "outputs": []
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn1",
+      "sourceNodeId": "gmailReader1",
+      "sourcePortId": "output",
+      "targetNodeId": "editNode1",
+      "targetPortId": "input"
+    },
+    {
+      "id": "conn2",
+      "sourceNodeId": "editNode1",
+      "sourcePortId": "output",
+      "targetNodeId": "langchainAgent1",
+      "targetPortId": "input"
+    },
+    {
+      "id": "conn3",
+      "sourceNodeId": "ollamaChatModel1",
+      "sourcePortId": "output",
+      "targetNodeId": "langchainAgent1",
+      "targetPortId": "chatModel"
+    },
+    {
+      "id": "conn4",
+      "sourceNodeId": "langchainAgent1",
+      "sourcePortId": "output",
+      "targetNodeId": "switchNode1",
+      "targetPortId": "input"
+    },
+    {
+      "id": "conn5",
+      "sourceNodeId": "switchNode1",
+      "sourcePortId": "0",
+      "targetNodeId": "langchainAgent2",
+      "targetPortId": "input"
+    },
+    {
+      "id": "conn6",
+      "sourceNodeId": "switchNode1",
+      "sourcePortId": "1",
+      "targetNodeId": "sendEmail1",
+      "targetPortId": "input"
+    },
+    {
+      "id": "conn7",
+      "sourceNodeId": "chatModel2",
+      "sourcePortId": "output",
+      "targetNodeId": "langchainAgent2",
+      "targetPortId": "chatModel"
+    },
+    {
+      "id": "conn8",
+      "sourceNodeId": "vectoreStoreTool1",
+      "sourcePortId": "output",
+      "targetNodeId": "langchainAgent2",
+      "targetPortId": "toolVectorStore1"
+    },
+    {
+      "id": "conn9",
+      "sourceNodeId": "gmailDraft1",
+      "sourcePortId": "output",
+      "targetNodeId": "langchainAgent2",
+      "targetPortId": "toolGmail2"
+    },
+    {
+      "id": "conn10",
+      "sourceNodeId": "pgVectoreStore1",
+      "sourcePortId": "output",
+      "targetNodeId": "vectoreStoreTool1",
+      "targetPortId": "vectorStore"
+    },
+    {
+      "id": "conn11",
+      "sourceNodeId": "ollamaChatModel3",
+      "sourcePortId": "output",
+      "targetNodeId": "vectoreStoreTool1",
+      "targetPortId": "chatModel"
+    },
+    {
+      "id": "conn12",
+      "sourceNodeId": "embeddings1",
+      "sourcePortId": "output",
+      "targetNodeId": "pgVectoreStore1",
+      "targetPortId": "input"
+    }
+  ]
+}

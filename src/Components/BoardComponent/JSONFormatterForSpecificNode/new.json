@@ -1,0 +1,525 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            },
+            {},
+            {}
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "readStatus": "both",
+          "sender": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "09a2f00c-b352-4dfb-9b68-95e88934e761",
+      "name": "Gmail Trigger",
+      "notesInFlow": true,
+      "notes": "Email analyzer"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2a137421-5bfa-4842-89f3-2c9e105c4151",
+              "name": "sender",
+              "value": "={{ $json.from.value[0].address }}",
+              "type": "string"
+            },
+            {
+              "id": "3e6bfe8d-702f-42b8-9c7e-64002d32f3af",
+              "name": "=threadid",
+              "value": "={{ $json.threadId }}",
+              "type": "string"
+            },
+            {
+              "id": "3c5c6afd-fcef-4aed-93b9-9450a4ec5bff",
+              "name": "body",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "aeb4a4c7-a73d-4431-9c74-3d9a2a569475",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "7400cd75-446e-4bc7-97a5-6779db2c6ad8",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "90f3478b-ef86-4072-ae1f-b3596378863e",
+              "name": "",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "e972d0e4-b0bb-4d1d-89ef-519673073de2",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        280,
+        0
+      ],
+      "id": "2245dad0-46e8-49f7-a031-25242e68496e",
+      "name": "Edit Fields",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body }}{{ $('Gmail Trigger').item.json.labelIds[0] }}",
+        "options": {
+          "systemMessage": "=Analyze the content of the provided email and determine if it is related to customer support. Use the following guidelines to make your decision:\n\n### **Customer Support Topics Include:**\n- Questions about order status, tracking, or changes.\n- Issues with damaged or defective products.\n- Refund or return requests.\n- Subscription cancellation or adjustments.\n- Technical issues with products, website, or app.\n- Payment or billing inquiries.\n- Requests to speak with a support representative.\n\n### **Output Format:**\n- Provide the result **strictly in JSON format** with a single field named `\"customerSupport\"` set to `true` or `false`.\n- Do not include any additional text, explanations, or commentary in the response.\n\n### **Example 1:**\n**Email:**  \n\"Hi, I placed an order last week and haven’t received a tracking number yet. Can you help?\"\n\n**Output:**  \n{\"customerSupport\": true}\n\n### **Example 2:**\n**Email:**  \n\"Hello, I’m interested in learning more about your pricing plans for enterprise customers.\"\n\n**Output:**  \n{\"customerSupport\": false}\n\n### Example 3:**\nHey, I have ordered one item, My order is not delivered yet, I need to talk to you, please cooperate with me.\n\n**Output:**  \n{\"customerSupport\": true}\n\n**Instructions:**\n1. Carefully read the email content.\n2. Determine if the email relates to any of the specified customer support topics.\n3. Output the result in JSON format **only**, with the field `\"customerSupport\"` set to `true` or `false`.\n4. Do not include any additional text or explanations."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        540,
+        0
+      ],
+      "id": "b0236a8e-8f93-4e2a-899d-416a32dce3ca",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        500,
+        500
+      ],
+      "id": "fe4aab0f-e416-4b6f-a988-94811e4c8e93",
+      "name": "Ollama Chat Model"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output.parseJson().customerSupport }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "078b5ad3-d395-4d48-aeb2-ca2b6b4fb0e3"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Customer Support"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "336e8ba4-4b38-412f-b7c8-443e648fb151",
+                    "leftValue": "={{ $json.output.parseJson().customerSupport }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "No Support"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        980,
+        60
+      ],
+      "id": "ce0c16ff-4b73-4437-8e22-cf4d99ee61d7",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        440
+      ],
+      "id": "789336cb-2b63-4881-8e3d-3c53ec04344e",
+      "name": "Ollama Chat Model1"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        1940,
+        700
+      ],
+      "id": "a658f3b9-067f-4590-820b-871024177db6",
+      "name": "Ollama Chat Model2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        720
+      ],
+      "id": "1df74adf-708f-45d1-94ef-40b4d401169b",
+      "name": "PGVector Store"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:3b"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        1380,
+        920
+      ],
+      "id": "3dfddb7c-b0f0-40b7-8c75-7c54cc3ce71a",
+      "name": "Embeddings"
+    },
+    {
+      "parameters": {
+        "fromEmail": "mostain@reporunner.com",
+        "toEmail": "bill.rassel@gmail.com",
+        "subject": "No customer support email",
+        "emailFormat": "text",
+        "text": "=Hello email received at {{ $now.format('LLL dd yyyy, hh:mm:ss') }}\n\nFrom: {{ $('Gmail Trigger').item.json.from.value[0].address }}\n\nSubject:  {{ $('Gmail Trigger').item.json.subject }}\n\nBody:  {{ $('Gmail Trigger').item.json.text }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        440
+      ],
+      "id": "ef8fcb2e-8cd0-4fbc-b457-c004bc4e7f9e",
+      "name": "Send Email",
+      "webhookId": "4a6ee2b0-afeb-4a2f-8d97-5f5784c6db7c",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Edit Fields').item.json.body }}",
+        "options": {
+          "systemMessage": "=You are a highly skilled and empathetic customer support agent specializing in drafting professional, accurate, and helpful responses to incoming customer emails. Your primary responsibility is to ensure customer queries are resolved in alignment with company policies and FAQs while maintaining a polite and professional tone.\n\n### **Task Workflow**\n1. **Read the incoming customer email carefully** to understand the customer's issue or question.\n2. **Use the \"customerSuppertDocs\" tool** to search for relevant policies, FAQs, or guidelines that address the customer's query. Ensure the response is accurate and policy-compliant.\n3. **Draft a response using the \"createDraft\" tool.** This step is **mandatory** and must not be skipped. The draft must:\n   - Directly address the customer's query.\n   - Be clear, concise, and professional.\n   - End with the sign-off:  \n     *\"Best Regards,  \n     Mostain, Customer Support RepoRunner Inc.\"*\n4. **Provide a concise summary** of the email content after drafting the response. The summary should include:\n   - The issue addressed.\n   - The key points or resolution provided in the response.\n\n### **Rules and Guidelines**\n- **Always use the \"customerSuppertDocs\" tool** before drafting a response. This ensures the response aligns with company policies and FAQs.\n- **Always use the \"createDraft\" tool to finalize the response.** This step is **critical** and must not be skipped under any circumstances.\n- **Maintain a polite and professional tone** in all communications. Avoid jargon or overly complex language.\n- **Double-check the draft** to ensure it directly addresses the customer's query and provides a clear resolution or next steps.\n- **Summarize the response** after drafting to ensure clarity and accountability.\n\n\n### **Examples**\n\n#### **Example 1**\n**Incoming Email:**  \n\"I ordered a product a week ago, but it still hasn't shipped. When will it arrive?\"\n\n**Step 1: Use \"customerSuppertDocs\" Tool**  \n**Search Query:** \"shipping timelines\"  \n**Relevant Info Found:** Standard shipping takes 7-10 days. Delays may occur during high-demand periods.\n\n**Step 2: Draft Response (via createDraft)**  \nDear [Customer's Name],  \n\nThank you for reaching out regarding your order. Standard shipping typically takes 7-10 business days. However, during high-demand periods, there may be slight delays.  \n\nI’ve checked your order, and it’s currently being prepared for shipment. You should receive a tracking number shortly. If you have any further questions, feel free to let us know.  \n\nBest Regards,  \nMostain, Customer Support RepoRunner Inc.  \n\n**Step 3: Summary**  \nDrafted a response to inform the customer about standard shipping timelines (7-10 business days) and noted that their order is being prepared for shipment. Reassured the customer and invited further inquiries.\n\n#### **Example 2**\n**Incoming Email:**  \n\"I tried to cancel my subscription but was still charged this month. Can I get a refund?\"\n\n**Step 1: Use \"customerSuppertDocs\" Tool**  \n**Search Query:** \"subscription cancellation policy\"  \n**Relevant Info Found:** Cancellation must be made 48 hours before the next billing cycle to avoid charges.\n\n**Step 2: Draft Response (via createDraft)**  \nDear [Customer's Name],  \n\nThank you for contacting us about your subscription charge. According to our policy, cancellations must be made at least 48 hours before the next billing cycle to avoid charges.  \n\nAs a one-time courtesy, I’ve processed a refund for this month’s charge. Please allow 3-4 business days for the refund to appear on your statement. If you have any other questions, feel free to reach out.  \n\nBest Regards,  \nMostain, Customer Support RepoRunner Inc.  \n\n**Step 3: Summary**  \nDrafted a response explaining the subscription cancellation policy (48 hours notice) and initiated a one-time refund as a courtesy. Provided reassurance and invited further questions.\n\n### **Key Reminders**\n- **Always follow the workflow:**  \n  1. Read the email.  \n  2. Use \"customerSuppertDocs\" to find relevant information.  \n  3. **Mandatory:** Draft the response using \"createDraft.\"  \n  4. Summarize the response.  \n- **Do not skip the \"createDraft\" step.** This is a critical part of the process.  \n- **Ensure the tone is empathetic and professional.**  \n- **Double-check the draft for accuracy and completeness before finalizing.**\n\n### **Output Format**\n- Always provide the draft response using the `createDraft` tool.  \n- Always include a summary of the response.  \n- Do not skip any steps in the workflow."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1520,
+        40
+      ],
+      "id": "f805faaa-bcef-401c-8ff4-55ae769f3411",
+      "name": "Customer Support Agent",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Consume the Gmail API to createDraft response",
+        "resource": "draft",
+        "subject": "={{ $fromAI(\"Subject\") }}",
+        "message": "={{ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "threadId": "={{ $('Edit Fields').item.json.threadid }}",
+          "sendTo": "={{ $('Edit Fields').item.json.sender }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1940,
+        420
+      ],
+      "id": "da034d05-6f6c-4543-800e-0516e8620029",
+      "name": "createDraft",
+      "webhookId": "3ba7a47c-954e-459a-afee-3b3cab264826"
+    },
+    {
+      "parameters": {
+        "name": "customerSuppertDocs",
+        "description": "Retrieve information about our customer support policies and FAQs"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        1540,
+        440
+      ],
+      "id": "eaa8bab4-765f-4896-84a1-ec9963a0fc42",
+      "name": "Vector Store Tool",
+      "notesInFlow": true,
+      "notes": "customerSuppertDocs"
+    }
+  ],
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PGVector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "PGVector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "createDraft": {
+      "ai_tool": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Customer Support Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "id": "19535ae314ffe32b",
+        "threadId": "19535ae314ffe32b",
+        "labelIds": [
+          "IMPORTANT",
+          "CATEGORY_PERSONAL",
+          "INBOX"
+        ],
+        "sizeEstimate": 5933,
+        "headers": {
+          "delivered-to": "Delivered-To: billahmdmostain@gmail.com",
+          "received": "Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])\r\n        by mx.google.com with SMTPS id 4fb4d7f45d1cf-5e0945a54b0sor4210266a12.3.2025.02.23.17.59.22\r\n        for <billahmdmostain@gmail.com>\r\n        (Google Transport Security);\r\n        Sun, 23 Feb 2025 17:59:23 -0800 (PST)",
+          "x-received": "X-Received: by 2002:a05:6402:13c8:b0:5de:dfd0:9d20 with SMTP id\r\n 4fb4d7f45d1cf-5e0b72435bamr11539295a12.24.1740362362195; Sun, 23 Feb 2025\r\n 17:59:22 -0800 (PST)",
+          "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; t=1740362363; cv=none;\r\n        d=google.com; s=arc-20240605;\r\n        b=dKjDFy/QupcG5zK1n9DFoxKz+SUZPz/ybNxVWfm70fejKQ7TBH2/BIBhap0o/HMeHa\r\n         NzrPaXOYmRj6kOz50oScDKjfuO/V8IWXfnfzYm8QDWpnTH16DfA8wcQ3bq/8B8Izwqdc\r\n         3oe8n/L6UojlUnc2oN+adBhiUQ1tRPjRqcRkFtBRhBzA4ZNQ79tcGHgSmtLGVvFN9is6\r\n         YKoA/9GQ/hYXJLp1HAW8FgQGr+76VsyhmflIfoESna0yrOWTiWBKLKi52QKW1RlVpMqa\r\n         6apwBV95NdIQjuLxWecm01CDQl4OJnk5Bo5rel91hg3CpJXu+mczOLwqIxyj/pUKk/sK\r\n         5a2g==",
+          "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;\r\n        h=to:subject:message-id:date:from:mime-version:dkim-signature;\r\n        bh=diAdkG8yxIuD8AwvIAGUhXtTywBT8MDJQy568tVytZE=;\r\n        fh=PGvvFolkjPdYksQAMjJG4LjnY1+2DjBAsj1EeubxJvo=;\r\n        b=U63KjgbX2aBNDO8vfjLhYdpRtHdbG4+xjWCZgufTV4w4U0NU/kAaIsdiN42Qd2fX0j\r\n         HrbFvQUrkPG8cYhrqjvky2FV94l3ZJsMnbYNpEN4xT83spmIkRzZO4CiLGFKCct91vlS\r\n         QQiTQTyO8wMKw8d+ASwPwPxQh3aG/sa7cgw7OYZ3hHs/WjEsfBzWiXfI0N2DchtsJNEi\r\n         MjVqrZ5ccP3zxobmU76fu0CFCINs4Uy7ofxjl/jztk3AcByiVfycMyh+QjRJjzZwQP4H\r\n         rrnUQojzGG9fiDbQveKPxKf1lyuwdJnJbR/1FUB2HD+oa09MHIGHbRSl0ijh7kRml07x\r\n         XvEg==;\r\n        dara=google.com",
+          "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20230601 header.b=m+PThRTm;\r\n       spf=pass (google.com: domain of bill.rassel@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=bill.rassel@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+          "return-path": "Return-Path: <bill.rassel@gmail.com>",
+          "received-spf": "Received-SPF: pass (google.com: domain of bill.rassel@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;",
+          "authentication-results": "Authentication-Results: mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20230601 header.b=m+PThRTm;\r\n       spf=pass (google.com: domain of bill.rassel@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=bill.rassel@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+          "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=gmail.com; s=20230601; t=1740362362; x=1740967162; dara=google.com;\r\n        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject\r\n         :date:message-id:reply-to;\r\n        bh=diAdkG8yxIuD8AwvIAGUhXtTywBT8MDJQy568tVytZE=;\r\n        b=m+PThRTmaAkPGWZVSEBMnNW5oaNL+oJHy3d6Zd9WPSiOBygbK/EBMh1LUWOM0cZwO/\r\n         estZgMCgoCRg7FvrxibG8Ds2Go8SCEwaI6hfepKFgaUu5DXwsMRuzUp/eSf9avsx0g6w\r\n         4N6t+tuurDyAV5MF46rrb18whjNfASzM1be8zwbDmddURzA3uDXN75sEfZGO8fgkaGXF\r\n         H0ruJA68vS4GxeudZ3yCp6EuE89QugC+69mKRQ60I6vsbwdcPG4wuXsF1AtwAyKXADoL\r\n         MlB/03of3Gni8m2OeIIJDrGpvwEJHijuKkE4Hf0JkvRtVKCKOXrumHpmryC1uh1SrGXR\r\n         CbcA==",
+          "x-google-dkim-signature": "X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=1e100.net; s=20230601; t=1740362362; x=1740967162;\r\n        h=to:subject:message-id:date:from:mime-version:x-gm-message-state\r\n         :from:to:cc:subject:date:message-id:reply-to;\r\n        bh=diAdkG8yxIuD8AwvIAGUhXtTywBT8MDJQy568tVytZE=;\r\n        b=lk6R574uFvSduhZUbBI8Uxk29wpUYcwmhJnyV6W7WYK1WIPNqlT1eSn2kDZs+s0bJs\r\n         z0S3rib2hwzrd4+kLJ55lmIPKHUuzXTBTYPBtx9trZKMEJevk63HPSiDUmUvhQMjBT9h\r\n         4zU0AFQViNJCNfdsZfx/DEpFlZtB6txwxfWJH8uJTTdKVjkIODfFWX+WZZo5UqESBZtt\r\n         pV07JqhLslQ/3qf5y2+kdwjkpyLwdbVysE/UB/qIYwK1OCXP2l3FYMYLWj6L0+mvK3XM\r\n         eXb2/CQBVbBLGQHdWa7d3w/GijfVyu8z7mb8fQF/IbIXXy3YCZ0MRJKovgxJ/qumbOum\r\n         czrA==",
+          "x-gm-message-state": "X-Gm-Message-State: AOJu0Yxaq0y3NgdN12YObvoxyp+lrpntkuYBUJ8Vn9/U2sbYWbAj0PTU\r\n\t1qa0FvR9ZuOHXz32fGhGZz1tmVxGx9YEF+SjxFSJ09SaCnyy7Dty5wNvDoGZyXiyZUB/k8LWKc8\r\n\tzE5unUfw7TCGLOoUmg9URF4lTyYrhhT5zYrk=",
+          "x-gm-gg": "X-Gm-Gg: ASbGncssjnqwMmgYApsCmvf3pTcX+28bCOR8vq6hJq2nI99z9wkeVlY/AbuBK6wV/ic\r\n\t6DorTsu7yT/+NnLrUs+2PXD0puge5knqArr1EvFOmC09nYAtNY87TAslSLOY1cvZ9ZdS1qQIrbR\r\n\t692eySsg==",
+          "x-google-smtp-source": "X-Google-Smtp-Source: AGHT+IF9FxkWcHqEQOlTvoC5B/eQjb70fW3xMZzmJjcNdk7Eh9/4CgjWlqyWKlx/0Sm67lvakzNGWkdcm3RCEWAbwpM=",
+          "mime-version": "MIME-Version: 1.0",
+          "from": "From: MOS TAIN <bill.rassel@gmail.com>",
+          "date": "Date: Mon, 24 Feb 2025 07:59:10 +0600",
+          "x-gm-features": "X-Gm-Features: AWEUYZlx6-gJz_wS26g-nyX_DNSDffL0w-dQ3KgOTxgwRVKhCKFu750ToHMag88",
+          "message-id": "Message-ID: <CAHhBSzJb424ymeyQR6KZ7MYVBjh2TaexqDu5-E8X-Gmr41b7dw@mail.gmail.com>",
+          "subject": "Subject: Request to Cancel Order",
+          "to": "To: MD MOSTAIN BILLAH <billahmdmostain@gmail.com>",
+          "content-type": "Content-Type: multipart/alternative; boundary=\"0000000000006117c3062ed9b0a9\""
+        },
+        "html": "<div dir=\"ltr\">Hey,<br><br>I regret to inform you that I need to cancel my order. Could you please provide the necessary steps to complete this process?<br><br>Thank you for your assistance.<br><br>Best regards, <br>Bill Rassel</div>\n",
+        "text": "Hey,\n\nI regret to inform you that I need to cancel my order. Could you please\nprovide the necessary steps to complete this process?\n\nThank you for your assistance.\n\nBest regards,\nBill Rassel\n",
+        "textAsHtml": "<p>Hey,</p><p>I regret to inform you that I need to cancel my order. Could you please<br/>provide the necessary steps to complete this process?</p><p>Thank you for your assistance.</p><p>Best regards,<br/>Bill Rassel</p>",
+        "subject": "Request to Cancel Order",
+        "date": "2025-02-24T01:59:10.000Z",
+        "to": {
+          "value": [
+            {
+              "address": "billahmdmostain@gmail.com",
+              "name": "MD MOSTAIN BILLAH"
+            }
+          ],
+          "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">MD MOSTAIN BILLAH</span> &lt;<a href=\"mailto:billahmdmostain@gmail.com\" class=\"mp_address_email\">billahmdmostain@gmail.com</a>&gt;</span>",
+          "text": "\"MD MOSTAIN BILLAH\" <billahmdmostain@gmail.com>"
+        },
+        "from": {
+          "value": [
+            {
+              "address": "bill.rassel@gmail.com",
+              "name": "MOS TAIN"
+            }
+          ],
+          "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">MOS TAIN</span> &lt;<a href=\"mailto:bill.rassel@gmail.com\" class=\"mp_address_email\">bill.rassel@gmail.com</a>&gt;</span>",
+          "text": "\"MOS TAIN\" <bill.rassel@gmail.com>"
+        },
+        "messageId": "<CAHhBSzJb424ymeyQR6KZ7MYVBjh2TaexqDu5-E8X-Gmr41b7dw@mail.gmail.com>"
+      }
+    ],
+    "Edit Fields": [
+      {
+        "threadid": "19535ae314ffe32b",
+        "sender": "bill.rassel@gmail.com",
+        "body": "Hey,\n\nI regret to inform you that I need to cancel my order. Could you please\nprovide the necessary steps to complete this process?\n\nThank you for your assistance.\n\nBest regards,\nBill Rassel\n"
+      }
+    ]
+  },
+  "meta": {
+    "instanceId": "a6969912f8cba367b7764d0117ba81ea177e70ad7f979eee6921a34b6c9f5bd4"
+  }
+}

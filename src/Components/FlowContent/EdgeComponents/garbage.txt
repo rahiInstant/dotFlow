@@ -1,0 +1,15 @@
+
+      {/* Invisible thicker path for consistent hover area */}
+      <path
+        d={getPathString(
+          props.position.x0,
+          props.position.y0,
+          props.position.x1,
+          props.position.y1
+        )}
+        fill="none"
+        stroke="transparent"
+        stroke-width="20"
+        style="cursor: pointer;"
+        onMouseDown={handleOnMouseDownEdge}
+      />

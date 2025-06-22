@@ -1,0 +1,482 @@
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} */
+
+/* body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background-color: #f9fafb;
+  color: #333;
+} */
+
+/* .app {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+} */
+
+h1 {
+  color: #333;
+  margin-bottom: 24px;
+}
+
+/* form {
+  background-color: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+} */
+
+/* label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus {
+  border-color: #0066ff;
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.2);
+  outline: none;
+} */
+
+/* background-color: #0066ff; */
+/* button {
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+} */
+
+button:hover {
+  /* background-color: #0052cc; */
+}
+
+/* button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.3);
+} */
+
+/* for main comp */
+
+.custom-select {
+  position: relative;
+  width: 100%;
+  font-family: inherit;
+  height: fit-content;
+}
+
+.label {
+  font-size: 15px;
+  color: #dbdbdd;
+  margin-bottom: 0.3rem;
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  column-gap: 0.3rem;
+}
+
+.foot-note {
+  font-size: 11px;
+  color: #9c9c9e;
+  margin-top: .3rem;
+  text-indent: .2rem;
+}
+
+.toolTipBtn {
+  opacity: 0;
+}
+
+.label:hover .toolTipBtn {
+  opacity: 100;
+}
+
+/* Hide the original select element */
+.hidden-select {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* The visible select button */
+.select-selected {
+  background-color: #252435;
+  border: 1px solid #404040;
+  border-radius: 6px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #d1cccc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: box-shadow 150ms ease-in-out;
+}
+
+.select-items.select-direction-up {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 5px;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.select-selected:hover {
+  border-color: #918f8f70;
+}
+
+.select-selected:focus {
+  /* border-color: #0066ff; */
+  border-color: #918f8f70;
+
+  box-shadow: 0 0 0 2px rgba(218, 215, 215, 0.26);
+  /* border-width: 2px; */
+  /* border: 2px solid #404040;
+  transition: .1ms; */
+  /* offset: 1px; */
+
+  outline: none;
+}
+
+/* Style the arrow inside the select */
+.select-selected::after {
+  content: "❯";
+  transform: rotate(90deg);
+  /* font-size: 1.1rem; */
+  /* border-left: 6px solid transparent; */
+  /* border-right: 6px solid transparent; */
+  /* border-top: 6px solid #555; */
+  transition: transform 0.3s ease;
+  margin-left: 10px;
+}
+
+.select-selected.active::after {
+  transform: rotate(270deg);
+}
+
+/* Disabled state */
+.select-selected.disabled {
+  background-color: #444343;
+  color: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Style the dropdown container */
+.select-items {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background-color: #252435;
+  border: 1px solid #404040;
+  border-radius: 6px;
+  margin-top: 5px;
+  max-height: 250px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for dropdown items */
+.select-items div {
+  padding: 12px 16px;
+  cursor: pointer;
+  color: #c5c3c3;
+  font-weight: normal;
+  transition: all 0.2s ease;
+}
+
+.select-items div:hover {
+  background-color: #343446;
+  color: #b8b5b5;
+}
+
+.select-items div.selected {
+  /* background-color: #e6f0ff; */
+  color: #c24434;
+  font-weight: normal;
+  /* font-weight: 500; */
+}
+
+/* Add a subtle separator between items */
+.select-items div:not(:last-child) {
+  /* border-bottom: 1px solid #eee; */
+}
+
+.select-show {
+  display: block;
+  animation: fadeIn 0.2s ease-in-out;
+  will-change: opacity, transform;
+}
+.select-hide {
+  animation: fadeOut 0.2s ease-in-out forwards;
+  transform-origin: top center;
+  will-change: opacity, transform;
+}
+/* Animation and display states */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Animation for dropdown opening upward */
+.select-direction-up.select-show {
+  animation: fadeInUp 0.3s ease-in-out;
+  transform-origin: bottom center;
+  will-change: opacity, transform;
+}
+
+/* Animation for dropdown closing upward */
+.select-direction-up.select-hide {
+  animation: fadeOutUp 0.2s ease-in-out forwards;
+  transform-origin: bottom center;
+  will-change: opacity, transform;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.select-items::-webkit-scrollbar {
+  width: 8px;
+}
+
+.select-items::-webkit-scrollbar-track {
+  /* background: #2e2e30;  */
+  /* background behind scrollbar thumb */
+  border-radius: 4px;
+  /* border: .5px solid #949292;  */
+}
+
+.select-items::-webkit-scrollbar-thumb {
+  background-color: #6a6a6b; /* color of the scroll thumb */
+  border-radius: 4px;
+  /* border-radius: 10px; */
+}
+
+.select-items::-webkit-scrollbar-thumb:hover {
+  background-color: #bb9086; /* thumb on hover */
+}
+
+/* option:nth-of-type(odd) {
+  background: #fff;
+} */ /* height: 3rem; */
+/* .container select {
+  width: 100%;
+
+  padding-left: 15px;
+  font-size: 16px;
+  border: 1.9px solid lightgray;
+  border-radius: 4px;
+  color: #d8d9db;
+  outline: none;
+  background: #292b3a;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 2px;
+  border: 1px solid #404040;
+  padding: 6px;
+} */
+
+/* option:first-of-type {
+  border-radius: 0 0 0 0;
+
+}
+
+option:last-of-type {
+  border-radius: 0 0 8px 8px;
+}
+
+option:not(option:last-of-type) {
+  border-bottom: none;
+}
+
+select {
+  appearance: base-select;
+} */
+
+/* option:nth-of-type(odd) {
+  background: #fff;
+} */
+
+/* .container .title {
+  position: absolute;
+  content: "Country";
+  top: -24px;
+  left: -216px;
+  background: #ffff;
+  width: 66px;
+  height: 22px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.container .title:before {
+  position: absolute;
+  content: "Country";
+  top: -24px;
+  left: -216px;
+  background: #ffff;
+  width: 66px;
+  height: 22px;
+  text-align: center;
+  font-size: 15px;
+} */
+
+/* .container .icon {
+  position: relative;
+  font-size: 12px;
+  color: #908D92;
+  left: -35px;
+  pointer-events: none;
+  padding: 10px 9px 15px 9px;
+}  */
+
+/* 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  width: 100%;
+  padding: 0 10px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+
+p {
+  display: flex;
+  gap: 10px;
+}
+
+label {
+  width: fit-content;
+  align-self: center;
+}
+
+select {
+  flex: 1;
+}
+select {
+  border: 2px solid #ddd;
+  background: #eee;
+  padding: 10px;
+  transition: 0.4s;
+}
+
+select:hover,
+select:focus {
+  background: #ddd;
+}
+select::picker-icon {
+  color: #999;
+  transition: 0.4s rotate;
+}
+select:open::picker-icon {
+  rotate: 180deg;
+}
+::picker(select) {
+  border: none;
+}
+option {
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+
+  border: 2px solid #ddd;
+  background: #eee;
+  padding: 10px;
+  transition: 0.4s;
+}
+option:first-of-type {
+  border-radius: 8px 8px 0 0;
+}
+
+option:last-of-type {
+  border-radius: 0 0 8px 8px;
+}
+
+option:not(option:last-of-type) {
+  border-bottom: none;
+}
+option:nth-of-type(odd) {
+  background: #fff;
+}
+
+
+option .icon {
+  font-size: 1.6rem;
+  text-box: trim-both cap alphabetic;
+}
+selectedcontent .icon {
+  display: none;
+}
+option:checked {
+  font-weight: bold;
+}
+option::checkmark {
+  order: 1;
+  margin-left: auto;
+  content: "☑️";
+}
+::picker(select) {
+  opacity: 0;
+  transition: all 0.4s allow-discrete;
+}
+::picker(select):popover-open {
+  opacity: 1;
+}
+@starting-style {
+  ::picker(select):popover-open {
+    opacity: 0;
+  }
+} */

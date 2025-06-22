@@ -1,0 +1,50 @@
+dropdown by keyboard
+  // const handleKeyDown = (e) => {
+  //   switch (e.key) {
+  //     case "Escape":
+  //       setIsOpen(false);
+  //       break;
+  //     case "Enter":
+  //     case " ":
+  //       e.preventDefault();
+  //       setIsOpen(!isOpen());
+  //       break;
+  //     case "ArrowDown":
+  //       if (!isOpen()) {
+  //         e.preventDefault();
+  //         setIsOpen(true);
+  //       }
+  //       break;
+  //     case "Tab":
+  //       setIsOpen(false);
+  //       break;
+  //   }
+  // };
+
+  // const handleOptionKeyDown = (e, option, index) => {
+  //   switch (e.key) {
+  //     case "Enter":
+  //     case " ":
+  //       e.preventDefault();
+  //       handleOptionClick(option);
+  //       break;
+  //     case "ArrowDown":
+  //       e.preventDefault();
+  //       const nextElement = e.currentTarget.nextElementSibling;
+  //       if (nextElement) nextElement.focus();
+  //       break;
+  //     case "ArrowUp":
+  //       e.preventDefault();
+  //       const prevElement = e.currentTarget.previousElementSibling;
+  //       if (prevElement) prevElement.focus();
+  //       break;
+  //     case "Escape":
+  //       e.preventDefault();
+  //       setIsOpen(false);
+  //       selectRef.focus();
+  //       break;
+  //   }
+  // };
+
+
+    // window.addEventListener("scroll", closeDropdown, true);
