@@ -1,0 +1,72 @@
+{
+  "name": "Email Analyzer",
+  "description": "A workflow demonstrating multiple inputs and outputs per node",
+  "nodes": [
+    {
+      "id": "node_k550l4_gmail-trigger",
+      "name": "Gmail Trigger",
+      "description": "Gmail reader",
+      "type": "GmailReader",
+      "parameters": {
+        "credentials": {
+          "id": "d0esgqltcbthv6156tjg",
+          "name": "Gmail Account",
+          "provider": "gmail",
+          "ctype": "oauth2"
+        },
+        "pollTimes": [{ "mode": "Every Hour", "minute": 10 }],
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "position": { "x": 1105, "y": -80 },
+      "inputs": [],
+      "outputs": [
+        {
+          "id": "output",
+          "name": "Last Email",
+          "description": "Read last email from your gmail inbox",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "id": "node_jfkx6d_edit",
+      "name": "Edit Fields",
+      "description": "Modify,add,or remove item fields.",
+      "type": "EditNode",
+      "parameter": {
+        "mode": "Manual Mapping",
+        "assignment": [
+          { "id": 1, "name": "fjf", "type": "String", "value": "fjfg" }
+        ],
+        "position": { "x": 1486, "y": 53 },
+        "inputs": [
+          {
+            "id": "input",
+            "name": "Input",
+            "description": "Data to filter",
+            "type": "object"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "output",
+            "name": "Output",
+            "description": "Outcode of the node after process",
+            "type": "object"
+          }
+        ]
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "edge_node_k550l4_gmail-trigger_0_node_jfkx6d_edit_0",
+      "sourceNodeId": "node_k550l4_gmail-trigger",
+      "sourcePortId": "vertex_f6jcze",
+      "targetNodeId": "node_jfkx6d_edit",
+      "targetPortId": "vertex_tyni4w"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+/* .label {
+  font-size: 15px;
+  color: #dbdbdd;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  column-gap: .3rem;
+} */
+
+.hr-solid-line {
+  border-bottom: 0.4px solid #4e4d4d;
+  margin-top: 0.5rem;
+  padding-bottom: .2rem;
+
+}

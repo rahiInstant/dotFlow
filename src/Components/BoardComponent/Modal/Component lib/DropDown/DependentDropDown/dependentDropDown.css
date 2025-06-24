@@ -1,0 +1,217 @@
+/* Base component styles */
+.custom-select {
+  position: relative;
+  width: 100%;
+  font-family: inherit;
+}
+
+.label {
+  font-size: 16px;
+  color: #dbdbdd;
+  margin-bottom: 0.3rem;
+  font-weight: 500 ;
+  display: flex;
+  align-items: center;
+  column-gap: .3rem;
+}
+
+.toolTipBtn {
+  opacity: 0;
+}
+
+.label:hover .toolTipBtn {
+  opacity: 100;
+}
+
+
+.foot-note {
+  font-size: 11px;
+  color: #9c9c9e;
+  margin-top: .3rem;
+  text-indent: .2rem;
+}
+
+/* Hide the original select element */
+.hidden-select {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* The visible select button */
+.select-selected {
+  background-color: #252435;
+  border: 1px solid #404040;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #c5c3c3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: box-shadow 150ms ease-in-out;
+  /* font-weight: 500; */
+}
+
+.select-selected:hover {
+  border-color: #918f8f70;
+}
+
+.select-selected:focus {
+  border-color: #918f8f70;
+  box-shadow: 0 0 0 2px rgba(218, 215, 215, 0.26);
+  outline: none;
+}
+
+/* Style the arrow inside the select */
+.select-selected::after {
+  content: "❯";
+  transform: rotate(90deg);
+  transition: transform 0.3s ease;
+  margin-left: 10px;
+}
+
+.select-selected.active::after {
+  transform: rotate(270deg);
+}
+
+/* Disabled state */
+.select-selected.disabled {
+  background-color: #444343;
+  color: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Style the dropdown container */
+.select-items {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background-color: #252435;
+  border: 1px solid #404040;
+  border-radius: 6px;
+  margin-top: 5px;
+  max-height: 250px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Base styles for all dropdown items */
+.select-items > div {
+  padding: 10px 16px;
+  cursor: pointer;
+  color: #c5c3c3;
+  font-weight: 400;
+  font-size: .9rem;
+  transition: all 0.2s ease;
+}
+
+.select-items > div:hover {
+  background-color: #343446;
+  color: #b8b5b5;
+}
+
+.select-items > div.selected {
+  color: #c24434;
+  font-weight: 500;
+}
+
+
+/* Accessibility improvements */
+.aria-selected-true {
+  color: #c24434 !important;
+  font-weight: 500;
+}
+
+.select-selected:focus {
+  border-color: #918f8f70;
+  box-shadow: 0 0 0 2px rgba(218, 215, 215, 0.26);
+  outline: none;
+}
+
+/* Animation and display states */
+.select-show {
+  display: block;
+  animation: fadeIn 0.2s ease-in-out;
+  will-change: opacity, transform;
+}
+
+.select-hide {
+  display: none !important;
+}
+
+/* Simplified animation - removing complex fadeOut that might cause issues */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Animation for dropdown opening upward */
+.select-direction-up.select-show {
+  animation: fadeInUp 0.3s ease-in-out;
+  transform-origin: bottom center;
+  will-change: opacity, transform;
+}
+
+.select-direction-up.select-hide {
+  display: none !important;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Scrollbar styling */
+.select-items::-webkit-scrollbar {
+  width: 8px;
+}
+
+.select-items::-webkit-scrollbar-track {
+  border-radius: 4px;
+}
+
+.select-items::-webkit-scrollbar-thumb {
+  background-color: #6a6a6b;
+  border-radius: 4px;
+}
+
+.select-items::-webkit-scrollbar-thumb:hover {
+  background-color: #bb9086;
+}
+
+/* Add subtle separators */
+.parent-option:not(:last-child),
+.child-option:not(:last-child) {
+  border-bottom: 1px solid rgba(64, 64, 64, 0.3);
+}
+
+/* Ensure proper stacking for nested views */
+.select-items [role="listbox"] {
+  position: relative;
+  z-index: 1;
+}

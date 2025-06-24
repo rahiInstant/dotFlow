@@ -1,0 +1,296 @@
+.node {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  cursor: pointer;
+  border-radius: 6px;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: border ease 0.2s, box-shadow ease 0.2s;
+  pointer-events: all;
+  z-index: 350;
+}
+
+.node:hover {
+  /* box-shadow: 2px 2px 12px -6px rgba(0, 0, 0, 0.75); */
+}
+
+.nodeSelected {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  cursor: pointer;
+  border-radius: 6px;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: border ease 0.2s, box-shadow ease 0.2s;
+  pointer-events: all;
+  z-index: 350;
+}
+
+/* .nodeSelected:hover {
+  box-shadow: 2px 2px 12px -6px rgba(0, 0, 0, 0.75);
+} */
+
+.inputsWrapper {
+  position: absolute;
+  top: 0px;
+  left: -6px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 12px;
+  pointer-events: none;
+}
+
+.input {
+  width: 10px;
+  height: 16px;
+  background-color: #c3c9d5;
+  cursor: crosshair;
+  pointer-events: all;
+}
+
+.inputsUPWrapper {
+  position: absolute;
+  top: -50%;
+  left: 45%;
+  transform: rotate(90deg);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 12px;
+  pointer-events: none;
+}
+
+.inputUp {
+  width: 13px;
+  height: 13px;
+  background-color: #c3c9d5;
+  cursor: crosshair;
+  pointer-events: all;
+  transform: rotate(45deg);
+}
+
+.inputUp:hover {
+  background-color: #ff6f5c;
+}
+
+.outputsDownWrapper {
+  position: absolute;
+  left: 45%;
+  bottom: -92.5%;
+  height: 100%;
+  display: flex;
+  align-items: top;
+  justify-content: center;
+  gap: 12px;
+  width: 12px;
+  pointer-events: none;
+}
+
+.outputDown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.outputDownVertex {
+  width: 13px;
+  height: 13px;
+  transform: rotate(45deg);
+  background-color: #c3c9d5;
+  cursor: crosshair;
+  pointer-events: all;
+}
+
+.downOutputLine {
+  width: 2.5px;
+  height: 40px;
+  background-color: #c3c9d5;
+  cursor: crosshair;
+  pointer-events: all;
+}
+
+.downPlusLine {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+
+  align-items: center;
+  pointer-events: all;
+  /* cursor: crosshair; */
+  /* opacity: 1; */
+  /* pointer-events: all; */
+  transition: opacity 0.3s ease-in;
+}
+
+.input:hover {
+  background-color: #ff6f5c;
+}
+
+.outputsWrapper {
+  /* position: absolute;
+  top: 0px;
+  right: -35px;
+  height: 100%; */
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 12px;
+  pointer-events: none;
+  margin-left: 23px;
+  /* background-color: wheat; */
+  /* border: 1px solid white; */
+}
+
+.output {
+  display: flex;
+  align-items: center;
+  /* position: absolute; */
+  /* left: 0; */
+}
+
+.outputCircle {
+  width: 16px;
+  height: 16px;
+  border-radius: 100%;
+  background-color: #c3c9d5;
+  cursor: crosshair;
+  pointer-events: all;
+}
+
+.outputCircle:hover {
+  background-color: #ff6f5c;
+}
+
+.outputLine {
+  width: 40px;
+  height: 2.5px;
+  background-color: #c3c9d5;
+  cursor: crosshair;
+  pointer-events: all;
+}
+
+.plusLine {
+  display: flex;
+  align-items: center;
+  pointer-events: all;
+  /* cursor: crosshair; */
+  /* opacity: 1; */
+  /* pointer-events: all; */
+  transition: opacity 0.3s ease-in;
+}
+
+.vertexNum {
+  position: absolute;
+  color: #c3c9d5;
+  padding: 1px;
+  right: 10px;
+  background-color: #2e2e2e;
+}
+
+.snapping {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -100px;
+  border-radius: 100%;
+  height: 100px;
+  width: 100px;
+  pointer-events: all;
+  cursor: auto;
+  z-index: 350;
+  /* border: 2px solid #c3c9d5; */
+  /* display: none; */
+}
+
+.snapping:hover .input {
+  background-color: #c3c9d5;
+}
+
+.plusLineShow {
+  opacity: 1;
+  pointer-events: all;
+  /* transition: opacity 0.3s ease-in; */
+}
+
+.plusLineHidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.outputPlus {
+  display: flex;
+  color: #c3c9d5;
+  padding: 2px;
+  border: 2px solid #c3c9d5;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.outputPlus:hover {
+  color: #ff6f5c;
+  border: 2px solid #ff6f5c;
+}
+
+.name {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  /* word-break: break-all; */
+  word-wrap: wrap;
+
+  padding: 4px;
+}
+
+.function {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* margin-bottom: 15px; */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  color: #fbfcfe;
+  /* z-index: 200; */
+  width: 100px;
+  height: auto;
+  /* position: absolute;
+  top: -35px;
+  right: 0; */
+}
+
+.functionWrapper {
+  position: absolute;
+  top: -35px;
+  height: 100%;
+}
+
+.function svg {
+  color: #fbfcfe;
+}
+
+.function svg:hover {
+  color: #ff6f5c;
+}
+
+.node:hover .function,
+.nodeSelected:hover .function {
+  opacity: 1;
+  pointer-events: all;
+}

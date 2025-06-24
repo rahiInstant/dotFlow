@@ -1,0 +1,29 @@
+.label {
+  font-size: 16px;
+  color: #dbdbdd;
+  margin-bottom: 0.3rem;
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  column-gap: .3rem;
+}
+
+.toolTipBtn {
+  opacity: 0;
+}
+
+.label:hover .toolTipBtn {
+  opacity: 100;
+}
+
+
+.foot-note {
+  font-size: 11px;
+  color: #9c9c9e;
+  margin-top: .3rem;
+  text-indent: .2rem;
+}
+
+input {
+  font-weight: normal !important;
+}

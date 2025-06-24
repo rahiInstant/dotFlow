@@ -1,0 +1,48 @@
+.EmailNode {
+  border: 2px solid #c3c9d5;
+  height: 100px;
+  width: 100px;
+  border-radius: 10px;
+  background-color: #414244;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.selectedNode {
+  border: 2px solid #c3c9d5;
+  height: 100px;
+  width: 100px;
+  border-radius: 10px;
+  background-color: #414244;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  outline: 8px solid #626262;
+}
+
+.mailIcon {
+  color: #00BB88;
+  font-size: 2.5rem;
+  /* fill: #256e13; */
+}
+
+.mailNodeText {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  position: absolute;
+  bottom: -50px;
+}
+
+.mailTitle {
+  font-weight: 600;
+  color: #f1f3ec;
+  font-size: 1rem;
+}
+.mailDescription {
+  font-weight: 400;
+  color: #b5b6b4;
+  font-size: 0.8rem;
+}

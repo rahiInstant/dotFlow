@@ -1,0 +1,109 @@
+.wrapper {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  pointer-events: none;
+  color: rgba(168, 168, 168, 0.8);
+  fill: none;
+  stroke-width: 2;
+  z-index: -1;
+  overflow: visible;
+}
+
+/* Hover effect triggered by the invisible hit area */
+.wrapper:hover {
+  & .edge {
+    stroke: #d89b3e;
+    stroke-width: 2;
+    fill: none;
+    z-index: 100;
+  }
+
+  & .delete {
+    cursor: pointer;
+    pointer-events: all;
+    opacity: 1;
+    transition: all ease 0.2s;
+  }
+}
+
+/* Invisible hit area for consistent hover detection */
+.hitArea {
+  pointer-events: stroke;
+  stroke: transparent;
+  stroke-width: 20;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: pointer;
+}
+
+/* .edgeNew {
+  stroke: #d89b3e;
+  stroke-width: 3;
+} */
+
+.edgeDash {
+  stroke-dasharray: 6, 4;
+}
+
+.delete {
+  pointer-events: none;
+  transition: all ease 0.2s;
+  opacity: 0;
+}
+
+.deleteHidden {
+  cursor: pointer;
+  pointer-events: none;
+  opacity: 0;
+  transition: all ease 0.1s;
+}
+
+.icon {
+  width: 26px;
+  height: 20px;
+  background-color: white;
+  fill: white;
+}
+
+.circle {
+  cx: 0;
+  cy: 0;
+  r: 14;
+  fill: rgb(175, 59, 59);
+}
+
+.edge {
+  pointer-events: none;
+  stroke: #c3c9d5;
+  stroke-width: 2;
+  fill: none;
+  transition: stroke 0.2s ease, stroke-width 0.2s ease;
+}
+
+.marker {
+  color: rgba(168, 168, 168, 0.8);
+}
+
+.edgeSelected {
+  pointer-events: none;
+  stroke: rgb(216, 141, 62);
+  stroke-width: 3;
+  fill: none;
+  z-index: 100;
+}
+
+.edgeNew {
+  pointer-events: none;
+  stroke: rgba(168, 168, 168, 0.4);
+  stroke-width: 2;
+  fill: none;
+  transition: stroke 0.2s ease, stroke-width 0.2s ease;
+}
+
+.arrow {
+  fill: #a8a8a8cc;
+  height: 3em;
+  width: 3em;
+}

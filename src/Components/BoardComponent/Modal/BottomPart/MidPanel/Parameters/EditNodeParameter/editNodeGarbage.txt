@@ -1,0 +1,289 @@
+   const { setFormData, formConfig, formData } = useStateContext();
+  const [ruleNo, setRuleNo] = createSignal([1]);
+  const [draggedIndex, setDraggedIndex] = createSignal<number | null>(null);
+  const [paramData, setParamData] = createSignal<
+    Array<{
+      key: string;
+      renameOutput: boolean;
+    }>
+  >([]);
+  const initialId = crypto.randomUUID();
+  const [editNodeData, setEditNodeData] = createSignal<
+    Array<{
+      uuid: string;
+      name: string;
+      type: string;
+      value: string;
+    }>
+  >([
+    {
+      uuid: initialId,
+      name: "",
+      type: "",
+      value: "",
+    },
+  ]);
+  const [getOption, setOption] = createSignal<
+    Array<{ label: string; value: string; description?: string }>
+  >([
+    {
+      label: "fallback output",
+      value: "fallback output",
+      description: "",
+    },
+    {
+      label: "ignore case",
+      value: "ignore case",
+      description: "",
+    },
+    {
+      label: "send data to all matching outputs",
+      value: "send data to all matching outputs",
+      description: "",
+    },
+  ]);
+  const [activeOption, setActiveOption] = createSignal<
+    Array<{ label: string; value: string; description?: string }>
+  >([]);
+
+
+  createEffect(() => {
+    console.log(formData());
+    console.log(editNodeData());
+    // setFormData(formConfig().id, "assignments", editNodeData());
+  });
+
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragEnter = (index: number) => {
+    const from = draggedIndex();
+    const to = index;
+
+    if (from === null || from === to) return;
+
+    const items = [...ruleNo()];
+    const [movedItem] = items.splice(from, 1);
+    items.splice(to, 0, movedItem);
+
+    setRuleNo(items);
+    setDraggedIndex(to); // Update new index as the dragged item moves
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };     
+      
+      
+      
+      <div class="space-y-6">
+        <div>
+          <label class="text-white text-sm block mb-2">Mode</label>
+          <DynamicDropdown
+            // name="mode"
+            options={[
+              {
+                label: "Manual Mapping",
+                value: "Manual Mapping",
+                // description: "Build a matching rule for each output.",
+              },
+              {
+                label: "JSON",
+                value: "JSON",
+                // description: "Write an expression to return the output index.",
+              },
+            ]}
+            onOption={(option) => {
+              setFormData({
+                ...formData(),
+                [formConfig().id]: {
+                  ...formData()[formConfig().id],
+                  mode: option.value,
+                },
+              });
+            }}
+          />
+          {/* <DropDownN
+            name="country"
+            options={countries}
+            placeholder="Select a country"
+            onChange={setCountry}
+            required
+          />
+        </div> */}
+
+        <div class="bg-[#1E1E2E]/40 p-4 rounded-lg border border-gray-700/30 overflow-visible">
+          <h3 class="text-white text-sm mb-4 flex items-center">
+            <span class="mr-2 w-1 h-5 bg-purple-500 rounded-full inline-block"></span>
+            Field to set
+          </h3>
+
+          <div class="routing-rules-wrapper space-y-2 w-full">
+            <For each={ruleNo()}>
+              {(item, index) => {
+                return (
+                  <div
+                    id=""
+                    classList={{
+                      [style.ruleItem]: true,
+                      dragging: draggedIndex() === index(),
+                    }}
+                    class={`transition-all duration-200 w-full ${
+                      index() !== 0
+                        ? "border-t border-dashed border-[#4e4e52] pt-3 mt-3"
+                        : ""
+                    }`}
+                    draggable="true"
+                    onDragStart={() => handleDragStart(index())}
+                    onDragEnter={() => handleDragEnter(index())}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={(e) => e.preventDefault()}
+                  >
+                    <div class="flex flex-row gap-1.5 ">
+                      <div class="flex flex-col items-center gap-1">
+                        <div
+                          class="text-[#6f6f70] hover:text-[#ff6f5c] cursor-grab active:cursor-grabbing bg-[#36373d] p-1 rounded-md"
+                          title="Drag to move"
+                        >
+                          <MoveIcon />
+                        </div>
+                        <div class="text-[#6f6f70] hover:text-[#ff6f5c] cursor-pointer bg-[#36373d] p-1 rounded-md">
+                          <DeleteIcon />
+                        </div>
+                        <div class="w-0.5 h-full bg-[#36373d] rounded-md"></div>
+                      </div>
+
+                      <div class="w-full">
+                        <div class="flex gap-2 mb-2 items-center">
+                          <InputField
+                            name="assignment"
+                            onInput={(input) => {
+                              setEditNodeData((prev) => {
+                                const newData = [...prev];
+                                newData[index()] = {
+                                  ...newData[index()],
+                                  name: input,
+                                };
+                                return newData;
+                              });
+                              setFormData({
+                                ...formData(),
+                                [formConfig().id]: {
+                                  ...formData()[formConfig().id],
+                                  assignments: editNodeData(),
+                                },
+                              });
+                            }}
+                          />
+                          <div class="flex-1">
+                            <Dropdown
+                              name="type"
+                              options={[
+                                { label: "String", value: "String" },
+                                { label: "Number", value: "Number" },
+                                { label: "Array", value: "Array" },
+                                { label: "Boolean", value: "Boolean" },
+                                { label: "Object", value: "Object" },
+                              ]}
+                              onOption={(option) => {
+                                setEditNodeData((prev) => {
+                                  const newData = [...prev];
+                                  newData[index()] = {
+                                    ...newData[index()],
+                                    type: option.value,
+                                  };
+                                  return newData;
+                                });
+                                setFormData({
+                                  ...formData(),
+                                  [formConfig().id]: {
+                                    ...formData()[formConfig().id],
+                                    assignments: editNodeData(),
+                                  },
+                                });
+                              }}
+                            />
+                          </div>
+                          <button
+                            title="cross"
+                            class="text-gray-400 cursor-pointer hover:text-white hover:bg-red-500/20 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                          >
+                            <CrossIcon />
+                          </button>
+                        </div>
+                        <div>
+                          <InputField
+                            name="assignments"
+                            onInput={(input) => {
+                              setEditNodeData((prev) => {
+                                const newData = [...prev];
+                                newData[index()] = {
+                                  ...newData[index()],
+                                  value: input,
+                                };
+                                return newData;
+                              });
+                              setFormData({
+                                ...formData(),
+                                [formConfig().id]: {
+                                  ...formData()[formConfig().id],
+                                  assignments: editNodeData(),
+                                },
+                              });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }}
+            </For>
+          </div>
+        </div>
+
+        <div
+          onClick={() => {
+            console.log(formData());
+            const newId = crypto.randomUUID();
+            const newIndex = ruleNo().length;
+            setRuleNo([...ruleNo(), newIndex + 1]);
+            setEditNodeData((prev) => [
+              ...prev,
+              {
+                uuid: newId,
+                name: "",
+                type: "",
+                value: "",
+              },
+            ]);
+          }}
+        >
+          <Button title="Add Routing Rule" width="w-full" />
+        </div>
+
+        <Switch
+          name="includeOtherInputFields"
+          switchText="Include other input fields."
+          toolTipContent={{
+            label: "",
+            text: `If the type of an expression doesn't match the type of the comparison, n8n will try to cast the expression to the required type. E.g. for booleans "false" or 0 will be cast to false`,
+          }}
+          onChange={(state) => {
+            setFormData({
+              ...formData(),
+              [formConfig().id]: {
+                ...formData()[formConfig().id],
+                includeOtherInputFields: state,
+              },
+            });
+          }}
+        />
+        <div>
+          <div class="text-[#c2c4c7] text-sm">Options</div>
+          <hr class="border-[#414142]" />
+          <div></div>
+        </div>
+      </div>
+      </div>
