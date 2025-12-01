@@ -1,6 +1,6 @@
 # dotFlow ➡️ Node-Edge Flow Editor
 A fully dynamic **graph-based visual editor** to create, connect, and manage **nodes and edges**, with **smooth zoom**, **pan**, **group selection**, **snapping**, and **dynamic edge shaping**.
-Built using **SolidJS** + **TypeScript**. **solidJS** reactive framework like **React** 
+Built using **SolidJS** + **TypeScript**. **solidJS** is a reactive framework like **React** 
 
 ![editor view](editor_view.png)
 ##🚀 Features
